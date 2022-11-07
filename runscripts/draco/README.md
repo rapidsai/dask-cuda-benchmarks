@@ -1,5 +1,9 @@
 ## Run scripts for benchmarking on Draco
 
+These scripts run benchmarks from
+[`dask-cuda`](https://github.com/rapidsai/dask-cuda) in a multi-node
+setting. These are set up to run on Draco.
+
 Draco is a SLURM-based system that uses pyxis and enroot for
 containerisation.
 
