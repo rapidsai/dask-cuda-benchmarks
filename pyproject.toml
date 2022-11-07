@@ -1,0 +1,25 @@
+# Copyright (c) 2022, NVIDIA CORPORATION.
+# SPDX-License-Identifier: Apache-2.0
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+include = '\.pyi?$'
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 88
+skip_gitignore = true
+known_dask = """
+    dask
+    distributed
+    dask_cuda
+"""
+known_rapids = """
+    rmm
+    cudf
+    strings_udf
+"""
+default_section = "THIRDPARTY"
+sections = "FUTURE,STDLIB,THIRDPARTY,DASK,RAPIDS,FIRSTPARTY,LOCALFOLDER"
