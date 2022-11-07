@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<title>
+dask-cuda local cupy transpose performance
+</title>
+<body>
+<h1>
+Historical performance of cupy transpose
+</h1>
+Legend entries are clickable to highlight that set of data,
+filled regions show standard deviation confidence intervals for
+throughput (using harmonic means and standard deviations,
+because it's a rate-based statistics).
+<h2>Hardware setup</h2>
+
+Single node DGX-1 with 8 V100 cards. In-node NVLink bisection
+bandwidth 150GB/s (per <a
+href="https://images.nvidia.com/content/pdf/dgx1-v100-system-architecture-whitepaper.pdf">whitepaper</a>).
+
+<h2>Benchmark setup</h2>
+<table><th>Name</th><th>Value</th><tr><td>compute_chunk_size</td><td>[2500, 2500]</td></tr>
+<tr><td>compute_shape</td><td>[25000, 25000]</td></tr>
+<tr><td>devices</td><td>[0, 1, 2, 3, 4, 5, 6, 7]</td></tr>
+<tr><td>nreps</td><td>5</td></tr>
+<tr><td>operation</td><td>transpose_sum</td></tr>
+<tr><td>user_second_size</td><td>1000</td></tr>
+<tr><td>user_size</td><td>25000</td></tr>
+<tr><td>worker_threads</td><td>[1]</td></tr></table>
+
+<h2>UCX NVLink + InfiniBand</h2>
+<h3>Throughput/worker</h3>
+<div id="vis_throughput0"></div>
+<h2>UCX NVLink only</h2>
+<h3>Throughput/worker</h3>
+<div id="vis_throughput1"></div>
+<h2>UCX InfiniBand only</h2>
+<h3>Throughput/worker</h3>
+<div id="vis_throughput2"></div>
+<h2>TCP over UCX</h2>
+<h3>Throughput/worker</h3>
+<div id="vis_throughput3"></div>
+<h2>Standard TCP</h2>
+<h3>Throughput/worker</h3>
+<div id="vis_throughput4"></div>
+
+<script type="text/javascript">
+vegaEmbed('#vis_throughput0', {"$schema": "https://vega.github.io/schema/vega-lite/v5.2.0.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 400}}, "data": {"url": "single_node_transpose_performance.csv"}, "layer": [{"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_1", "value": 1}, "value": 0.2}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"axis": {"title": "Throughput [GB/s/GPU]"}, "field": "throughput_mean", "type": "quantitative"}}, "mark": "line", "name": "view_1", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "True", "field": "nvlink"}, {"equal": "True", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}]}, {"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_1", "value": 0.3}, "value": 0.01}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"field": "y", "type": "quantitative"}, "y2": {"field": "y2"}}, "mark": "area", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "True", "field": "nvlink"}, {"equal": "True", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}, {"as": "y", "calculate": "(datum.throughput_mean - datum.throughput_std)"}, {"as": "y2", "calculate": "(datum.throughput_mean + datum.throughput_std)"}]}], "params": [{"bind": "legend", "name": "param_1", "select": {"fields": ["ucx_version"], "type": "point"}, "views": ["view_1"]}]}).catch(console.error);
+vegaEmbed('#vis_throughput1', {"$schema": "https://vega.github.io/schema/vega-lite/v5.2.0.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 400}}, "data": {"url": "single_node_transpose_performance.csv"}, "layer": [{"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_2", "value": 1}, "value": 0.2}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"axis": {"title": "Throughput [GB/s/GPU]"}, "field": "throughput_mean", "type": "quantitative"}}, "mark": "line", "name": "view_2", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "True", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}]}, {"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_2", "value": 0.3}, "value": 0.01}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"field": "y", "type": "quantitative"}, "y2": {"field": "y2"}}, "mark": "area", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "True", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}, {"as": "y", "calculate": "(datum.throughput_mean - datum.throughput_std)"}, {"as": "y2", "calculate": "(datum.throughput_mean + datum.throughput_std)"}]}], "params": [{"bind": "legend", "name": "param_2", "select": {"fields": ["ucx_version"], "type": "point"}, "views": ["view_2"]}]}).catch(console.error);
+vegaEmbed('#vis_throughput2', {"$schema": "https://vega.github.io/schema/vega-lite/v5.2.0.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 400}}, "data": {"url": "single_node_transpose_performance.csv"}, "layer": [{"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_3", "value": 1}, "value": 0.2}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"axis": {"title": "Throughput [GB/s/GPU]"}, "field": "throughput_mean", "type": "quantitative"}}, "mark": "line", "name": "view_3", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "True", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}]}, {"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_3", "value": 0.3}, "value": 0.01}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"field": "y", "type": "quantitative"}, "y2": {"field": "y2"}}, "mark": "area", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "True", "field": "infiniband"}, {"equal": "False", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}, {"as": "y", "calculate": "(datum.throughput_mean - datum.throughput_std)"}, {"as": "y2", "calculate": "(datum.throughput_mean + datum.throughput_std)"}]}], "params": [{"bind": "legend", "name": "param_3", "select": {"fields": ["ucx_version"], "type": "point"}, "views": ["view_3"]}]}).catch(console.error);
+vegaEmbed('#vis_throughput3', {"$schema": "https://vega.github.io/schema/vega-lite/v5.2.0.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 400}}, "data": {"url": "single_node_transpose_performance.csv"}, "layer": [{"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_4", "value": 1}, "value": 0.2}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"axis": {"title": "Throughput [GB/s/GPU]"}, "field": "throughput_mean", "type": "quantitative"}}, "mark": "line", "name": "view_4", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "True", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}]}, {"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_4", "value": 0.3}, "value": 0.01}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"field": "y", "type": "quantitative"}, "y2": {"field": "y2"}}, "mark": "area", "transform": [{"filter": {"and": [{"equal": "ucx", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "True", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}, {"as": "y", "calculate": "(datum.throughput_mean - datum.throughput_std)"}, {"as": "y2", "calculate": "(datum.throughput_mean + datum.throughput_std)"}]}], "params": [{"bind": "legend", "name": "param_4", "select": {"fields": ["ucx_version"], "type": "point"}, "views": ["view_4"]}]}).catch(console.error);
+vegaEmbed('#vis_throughput4', {"$schema": "https://vega.github.io/schema/vega-lite/v5.2.0.json", "config": {"view": {"continuousHeight": 300, "continuousWidth": 400}}, "data": {"url": "single_node_transpose_performance.csv"}, "layer": [{"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_5", "value": 1}, "value": 0.2}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"axis": {"title": "Throughput [GB/s/GPU]"}, "field": "throughput_mean", "type": "quantitative"}}, "mark": "line", "name": "view_5", "transform": [{"filter": {"and": [{"equal": "tcp", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "True", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}]}, {"encoding": {"color": {"field": "ucx_version", "type": "nominal"}, "opacity": {"condition": {"param": "param_5", "value": 0.3}, "value": 0.01}, "x": {"axis": {"title": "Date"}, "field": "timestamp", "type": "temporal"}, "y": {"field": "y", "type": "quantitative"}, "y2": {"field": "y2"}}, "mark": "area", "transform": [{"filter": {"and": [{"equal": "tcp", "field": "protocol"}, {"equal": "False", "field": "nvlink"}, {"equal": "False", "field": "infiniband"}, {"equal": "True", "field": "tcp"}]}}, {"as": "throughput_mean", "calculate": "(datum.throughput_mean / 1000000000.0)"}, {"as": "throughput_std", "calculate": "(datum.throughput_std / 1000000000.0)"}, {"as": "y", "calculate": "(datum.throughput_mean - datum.throughput_std)"}, {"as": "y2", "calculate": "(datum.throughput_mean + datum.throughput_std)"}]}], "params": [{"bind": "legend", "name": "param_5", "select": {"fields": ["ucx_version"], "type": "point"}, "views": ["view_5"]}]}).catch(console.error);
+</script>
+</body>
+</html>

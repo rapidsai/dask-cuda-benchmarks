@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dask-cuda benchmarks</title>
+  </head>
+  <body>
+    <h1>Overview</h1>
+    <p>
+      Some
+      simple <a href="https://github.com/rapidsai/dask-cuda/">dask-cuda</a>
+      benchmarks, measuring throughput over time
+    </p>
+    <h2>Multi-node experiments</h2>
+    <p>
+      These are run on Draco,
+      see <a href="https://github.com/wence-/dask-cuda-benchmarks/">the
+        run scripts</a>.
+    </p>
+    <h3><a href="multi-node-merge.html">Merge throughput</a></h3>
+    <p>
+      This measures achieved throughput / GPU in a multi-node weak scaling
+      experiment. Each worker has 40M rows, and the total processed
+      data is <code>ngpu * nrow * 2 * 8 * 2</code> bytes
+    </p>
+    <h3><a href="multi-node-transpose.html">Transpose sum</a></h3>
+    <p>
+      This measures achieved throughput / GPU in a multi-node strong scaling
+      experiment. The benchmark transposes a distributed 2D array
+      (of size 50000 x 50000), adds it to itself (pointwise parallel),
+      before summing up all entries. The total processed data
+      is <code>nrow * ncol * 8</code> bytes.
+    </p>
+    <h2>Single-node experiments</h2>
+    <p>
+      These are run as part of the
+      UCX-Py <a href="https://github.com/pentschev/ucx-py-ci">nightlies</a>,
+      which also contains historical performance for point-to-point
+      message passing.
+    </p>
+    <h3><a href="single-node-merge.html">Merge throughput</a></h3>
+    <p>
+      This measures achieved throughput / GPU in a single-node
+      experiment. Each worker has 100M rows, and the total processed
+      data is <code>ngpu * nrow * 2 * 8 * 2</code> bytes
+    </p>
+    <h3><a href="single-node-transpose.html">Transpose sum</a></h3>
+    <p>
+      This measures achieved throughput / GPU in a single-nodes
+      experiment. The benchmark transposes a distributed 2D array
+      (of size 25000 x 25000), adds it to itself (pointwise parallel),
+      before summing up all entries. The total processed data
+      is <code>nrow * ncol * 8</code> bytes.
+    </p>
+  </body>
+</html>
