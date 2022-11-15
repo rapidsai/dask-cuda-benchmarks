@@ -1,0 +1,1 @@
+{"backend": "dask", "merge_type": "gpu", "rows_per_chunk": 100000000, "devices": [0, 1, 2, 3, 4, 5, 6, 7], "rmm_pool": true, "frac_match": 0.3, "nreps": 5}
