@@ -21,11 +21,12 @@ if [[ ! -d ${WEBSITE_DIRECTORY} ]]; then
     exit 1
 fi
 
-python make-single-node-charts.py ${LOCAL_DATA_LOCATION}/single-node/ ${WEBSITE_DIRECTORY} --make-charts
+LOC=$(dirname $0)
+python ${LOC}/make-single-node-charts.py ${LOCAL_DATA_LOCATION}/single-node/ ${WEBSITE_DIRECTORY} --make-charts
 
 rsync -rvupm ${MULTI_NODE_REMOTE_LOCATION} ${LOCAL_DATA_LOCATION}/multi-node/ \
       --filter '+ */' \
       --filter '+ *.json' \
       --filter '- *'
 
-python make-multi-node-charts.py ${LOCAL_DATA_LOCATION}/multi-node/ ${WEBSITE_DIRECTORY} --make-charts
+python ${LOC}/make-multi-node-charts.py ${LOCAL_DATA_LOCATION}/multi-node/ ${WEBSITE_DIRECTORY} --make-charts
