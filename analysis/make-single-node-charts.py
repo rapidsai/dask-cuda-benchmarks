@@ -488,7 +488,7 @@ def get_results(
     if not df.empty:
         df, meta = extract_metadata(df)
     if existing is not None:
-        df = pd.concat([existing, df]).sort_values("timestamp")
+        df = pd.concat([existing, df]).sort_values("timestamp", kind="mergesort")
     assert meta is not None
     return sanitize_dataframe(df), meta
 
