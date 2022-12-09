@@ -1,0 +1,4 @@
+typer
+more-itertools
+pyarrow
+numpy
