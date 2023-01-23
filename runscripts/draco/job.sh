@@ -17,6 +17,8 @@ NGPUS=$(nvidia-smi -L | wc -l)
 export EXPECTED_NUM_WORKERS=$((SLURM_JOB_NUM_NODES * NGPUS))
 
 export UCX_HANDLE_ERRORS=bt,freeze
+# https://github.com/openucx/ucx/issues/8639
+export UCX_RNDV_SCHEME=get_zcopy
 export PROTOCOL=ucx
 # FIXME is the interface correct?
 export COMMON_ARGS="--protocol ${PROTOCOL} \
