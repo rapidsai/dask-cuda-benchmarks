@@ -22,7 +22,7 @@ export UCX_RNDV_SCHEME=get_zcopy
 export PROTOCOL=ucx
 # FIXME is the interface correct?
 export COMMON_ARGS="--protocol ${PROTOCOL} \
-       --interface ibs1 \
+       --interface ibp5s0 \
        --scheduler-file ${SCRATCHDIR}/scheduler-${SLURM_JOBID}.json"
 export PROTOCOL_ARGS=""
 export WORKER_ARGS="--local-directory /tmp/dask-${SLURM_PROCID} \
@@ -53,7 +53,7 @@ if [[ $(((SLURM_PROCID / SLURM_NTASKS_PER_NODE) * SLURM_NTASKS_PER_NODE)) == ${S
                --no-dashboard \
                ${COMMON_ARGS} &
         sleep 6
-        python -m dask_cuda.cli.dask_cuda_worker \
+        dask cuda worker \
                --no-dashboard \
                ${COMMON_ARGS} \
                ${PROTOCOL_ARGS} \
@@ -131,7 +131,7 @@ if [[ $(((SLURM_PROCID / SLURM_NTASKS_PER_NODE) * SLURM_NTASKS_PER_NODE)) == ${S
     else
         echo "${SLURM_PROCID} on node ${SLURM_NODEID} starting worker"
         sleep 6
-        python -m dask_cuda.cli.dask_cuda_worker \
+        dask cuda worker \
                --no-dashboard \
                ${COMMON_ARGS} \
                ${PROTOCOL_ARGS} \
