@@ -28,7 +28,7 @@ export JOB_SCRIPT=${RUNDIR}/job.sh
 
 
 for ucx_version in v1.12.x v1.13.x v1.14.x master; do
-    if [ $ucx_version == "v1.13.x" -a $SLURM_JOB_NUM_NODES -ge 8 ]; then
+    if [ $ucx_version == "v1.13.x" -a $SLURM_JOB_NUM_NODES -ge 4 ]; then
         continue
     fi
     export CONTAINER=$(readlink -f ~/workdir/enroot-images/ucx-py-${ucx_version}-${DATE}.sqsh)
