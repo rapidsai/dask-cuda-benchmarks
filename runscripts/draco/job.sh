@@ -22,13 +22,15 @@ export UCX_RNDV_SCHEME=get_zcopy
 export PROTOCOL=ucx
 # FIXME is the interface correct?
 export COMMON_ARGS="--protocol ${PROTOCOL} \
-       --interface ibp5s0 \
+       --interface ibp132s0 \
        --scheduler-file ${SCRATCHDIR}/scheduler-${SLURM_JOBID}.json"
 export PROTOCOL_ARGS=""
 export WORKER_ARGS="--local-directory /tmp/dask-${SLURM_PROCID} \
        --multiprocessing-method forkserver"
 
 export PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED=0
+export PTXCOMPILER_KNOWN_DRIVER_VERSION=11.2
+export PTXCOMPILER_KNOWN_RUNTIME_VERSION=11.2
 # Still needed?
 export UCX_MEMTYPE_CACHE=n
 
