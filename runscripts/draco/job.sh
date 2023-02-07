@@ -49,7 +49,7 @@ if [[ $(((SLURM_PROCID / SLURM_NTASKS_PER_NODE) * SLURM_NTASKS_PER_NODE)) == ${S
         python ${RUNDIR}/get-versions.py ${OUTPUT_DIR}/version-info.json
         mamba list --json > ${OUTPUT_DIR}/environment-info.json
         echo "${SLURM_PROCID} on node ${SLURM_NODEID} starting scheduler/client"
-        python -m distributed.cli.dask_scheduler \
+        dask scheduler \
                --no-dashboard \
                ${COMMON_ARGS} &
         sleep 6
