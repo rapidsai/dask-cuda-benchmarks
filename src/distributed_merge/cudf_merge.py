@@ -291,6 +291,8 @@ class MPICommunicator(CommunicatorBase):
 @nvtx.annotate(domain="MERGE")
 def initialize_rmm(device: int):
     # Work around cuda-python initialization bugs
+    from rmm.allocators.cupy import rmm_cupy_allocator
+
     _, dev = cudart.cudaGetDevice()
     cuda.cuDevicePrimaryCtxRelease(dev)
     cuda.cuDevicePrimaryCtxReset(dev)
@@ -303,7 +305,7 @@ def initialize_rmm(device: int):
         managed_memory=False,
         devices=device,
     )
-    cp.cuda.set_allocator(rmm.rmm_cupy_allocator)
+    cp.cuda.set_allocator(rmm_cupy_allocator)
 
 
 @nvtx.annotate(domain="MERGE")
